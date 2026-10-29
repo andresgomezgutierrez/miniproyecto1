@@ -298,6 +298,11 @@ sumaría al de las ventas.
 `resultados/metricas.csv`, ordenada por RMSE. Las cuatro filas comparten la
 decisión sobre los datos, así que las diferencias vienen solo del modelo.
 
+Las cifras son las del guion corrido en macOS. En la acción de GitHub
+(Linux) el optimizador de `statsmodels` termina en un punto un poco
+distinto, y el RMSE del SARIMAX sale 121,79 en lugar de 121,80; lo demás
+coincide con un decimal.
+
 | Modelo | Decisión | RMSE | MAE | MAPE (%) |
 |---|---|---|---|---|
 | SARIMAX(1, 1, 1)(1, 1, 1, 12) + exógenas | sin huecos (regla: interpolación lineal); meses de 2020-2021 con residuo STL > 3 desv. cambiados por tendencia + estacional | 121.80 | 98.38 | 1.78 |
