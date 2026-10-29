@@ -1,6 +1,6 @@
 name: El guion corre de principio a fin
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   correr:
