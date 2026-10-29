@@ -1,22 +1,17 @@
 # datos
 
-La serie del grupo va en esta carpeta, en CSV. Llene esta ficha y borre la
-serie de ejemplo cuando ya no la use.
-
 | Campo | Valor |
 |---|---|
-| Archivo | {{nombre del CSV}} |
-| Qué mide | {{...}} |
-| Fuente | {{institución o conjunto de datos, con enlace}} |
-| Licencia | {{...}} |
+| Archivo | `ventas_licores_eeuu.csv` |
+| Qué mide | Ventas mensuales de las licorerías de Estados Unidos (beer, wine, and liquor stores, NAICS 4453), en millones de dólares corrientes, sin ajuste estacional |
+| Fuente | U.S. Census Bureau, *Monthly Retail Trade Survey*, publicada en FRED (Federal Reserve Bank of St. Louis) con el código [MRTSSM4453USN](https://fred.stlouisfed.org/series/MRTSSM4453USN) |
+| Licencia | Dominio público (obra del gobierno de EE. UU.); FRED pide citar la fuente |
 | Frecuencia | mensual |
-| Periodo | {{primer mes}} a {{último mes}} ({{n}} observaciones) |
-| Columna de fecha | {{...}} |
-| Columna que se pronostica | {{...}} |
+| Periodo | 1992-01 a 2026-08 (416 observaciones) |
+| Columna de fecha | `observation_date` |
+| Columna que se pronostica | `MRTSSM4453USN` |
 
-## Serie de ejemplo
-
-`air_passengers.csv`: pasajeros mensuales de una aerolínea entre 1949 y 1960,
-la serie clásica de Box y Jenkins, tomada de Kaggle
-(`rakannimer/air-passengers`). Solo sirve para comprobar que el guion corre;
-el miniproyecto se hace con la serie del grupo.
+El archivo se descargó el 28 de octubre de 2026 desde
+`https://fred.stlouisfed.org/graph/fredgraph.csv?id=MRTSSM4453USN`, sin
+cambios. El Census Bureau revisa los últimos meses cuando publica cifras
+nuevas, así que una descarga posterior puede diferir en los meses finales.
