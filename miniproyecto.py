@@ -63,7 +63,8 @@ def atipicos(serie):
     print(f"  meses con |residuo STL| > {UMBRAL} desv. en toda la serie:",
           [f"{m:%Y-%m}" for m in todos])
     en_choque = (serie.index >= CHOQUE[0]) & (serie.index <= CHOQUE[1])
-    meses = serie.index[(z.abs() > UMBRAL) & en_choque]
+    antes = serie.index < serie.index[-N_PRUEBA]   # la prueba no se toca
+    meses = serie.index[(z.abs() > UMBRAL) & en_choque & antes]
     return meses, stl
 
 
@@ -234,6 +235,11 @@ def elegir_sarima(serie, d, D):
     print(acorr_ljungbox(resid, lags=[12, 24]).round(3).to_string())
     fuera_resid = fuera(*acf(resid, nlags=24, alpha=0.05))
     print("  ACF de los residuos fuera de la banda:", fuera_resid)
+    r = acf(resid, nlags=12)
+    print("  ACF de los residuos:", {k: round(float(r[k]), 2) for k in (1, 2, 3, 4, 6, 9, 10, 12)})
+    antes, despues = resid[:"2019-12"], resid["2020-01":]
+    print(f"  desviación de los residuos: {antes.std() * ESCALA:,.0f} hasta 2019, "
+          f"{despues.std() * ESCALA:,.0f} desde 2020")
     for mes in resid.abs().sort_values(ascending=False).index[:3]:
         print(f"    residuo grande {mes:%Y-%m}: {resid[mes] * ESCALA:+,.0f}")
 
@@ -322,7 +328,7 @@ def fila(nombre, serie, modelo):
                         "MAPE": round(promedio["MAPE"], 2)}
 
 
-def errores_por_mes(serie, modelo):
+def errores_por_mes(serie, modelo, nombre):
     """Error absoluto medio del backtest según el mes del año que se pronostica."""
     errores = []
     for corte in range(len(serie) - N_PRUEBA, len(serie) - 12 + 1):
@@ -333,7 +339,7 @@ def errores_por_mes(serie, modelo):
     errores = pd.DataFrame(errores)
     por_mes = errores.groupby(errores["mes"].dt.month)["error"].apply(
         lambda e: e.abs().mean())
-    print("  error absoluto medio por mes del año:",
+    print(f"  {nombre}, error absoluto medio por mes del año:",
           {mes: round(valor) for mes, valor in por_mes.items()})
     sesgo = errores.groupby("mes")["error"].mean().sort_values()
     print("  meses más sobreestimados:",
@@ -407,8 +413,10 @@ def main():
         mejora = 100 * (base[metrica] - mejor[metrica]) / base[metrica]
         print(f"  {metrica}: {base[metrica]:,.2f} -> {mejor[metrica]:,.2f} "
               f"({mejora:.1f} % menos)")
-    print("Dónde falla el SARIMAX en el backtest (real - pronóstico):")
-    errores_por_mes(serie, sarimax)
+    print("Dónde fallan en el backtest (error = real - pronóstico):")
+    errores_por_mes(serie, lambda t, h: estacional_ingenuo(t, h, PERIODO),
+                    "estacional ingenuo")
+    errores_por_mes(serie, sarimax, "SARIMAX")
 
     graficar_pronosticos(serie, {
         "estacional ingenuo": lambda t, h: estacional_ingenuo(t, h, PERIODO),
